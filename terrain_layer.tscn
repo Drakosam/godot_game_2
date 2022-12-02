@@ -1,0 +1,61 @@
+[gd_scene load_steps=2 format=3 uid="uid://clhr722hmqxv1"]
+
+[sub_resource type="GDScript" id="GDScript_rvw41"]
+script/source = "extends Node2D
+
+var Tile = preload(\"res://components/terain_tile.tscn\")
+var rescale = 2
+var h_size = 32*rescale
+var v_size = 28*rescale
+
+var size_of_layer = 51 # need be not odd
+
+var world = []
+var tile_list = []
+var tile_active = []
+
+signal setup_camera(is_visible, jump_position)
+
+func _ready():
+	
+	if size_of_layer % 2 == 0:
+		size_of_layer += 1
+	
+	for iy in range(size_of_layer):
+		var line = []
+		
+		for ix in range(size_of_layer):
+			var tile = Tile.instantiate()
+			tile.scale.x = rescale
+			tile.scale.y = rescale
+			tile.position.x = (ix+1) * (h_size * 1.5 + 1)
+			tile.position.y = (iy+1) * (v_size * 2 + 1) + (v_size *(ix%2))
+			
+			tile.setup_posytion_in_world(ix, iy)
+			
+			add_child(tile)
+			tile_list.append(tile)
+			line.append(tile)
+
+		world.append(line)
+	
+	for tile in tile_list:
+		tile.setup_neighborhood(world)
+	
+	world[(size_of_layer-1)/2][(size_of_layer-1)/2].setup_system((size_of_layer-1)/2)
+	
+	emit_signal('setup_camera', visible, world[(size_of_layer-1)/2][(size_of_layer-1)/2].position)
+		
+	for tile in tile_list:
+		if tile.my_ring_num < 0:
+			tile.visible = false
+		else:
+			tile.is_active = true
+			tile_active.append(tile)
+			
+	
+			
+"
+
+[node name="terrain_layer" type="Node2D"]
+script = SubResource("GDScript_rvw41")

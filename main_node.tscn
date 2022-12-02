@@ -1,0 +1,53 @@
+[gd_scene load_steps=4 format=3 uid="uid://bsqyk7a8hh3a0"]
+
+[ext_resource type="PackedScene" uid="uid://clhr722hmqxv1" path="res://terrain_layer.tscn" id="1_4ffcw"]
+
+[sub_resource type="GDScript" id="GDScript_mf1ag"]
+script/source = "extends Node2D
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	pass
+
+
+func _on_terrain_layer_setup_camera(is_visible, jump_position):
+	print(is_visible,' ',jump_position)
+	if is_visible:
+		$Camera2D.position = jump_position
+"
+
+[sub_resource type="GDScript" id="GDScript_w7hon"]
+script/source = "extends Camera2D
+
+
+func _ready():
+	pass # Replace with function body.
+
+
+func _process(delta):
+	pass
+
+func _unhandled_input(event):
+	if event is InputEventMouseMotion:
+		if event.button_mask == MOUSE_BUTTON_MASK_MIDDLE:
+			position -= event.relative
+"
+
+[node name="MainNode" type="Node2D"]
+script = SubResource("GDScript_mf1ag")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="terrain_layer" parent="." instance=ExtResource("1_4ffcw")]
+
+[node name="Camera2D" type="Camera2D" parent="."]
+current = true
+script = SubResource("GDScript_w7hon")
+
+[connection signal="setup_camera" from="terrain_layer" to="." method="_on_terrain_layer_setup_camera"]
