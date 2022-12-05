@@ -1,0 +1,31 @@
+[gd_scene load_steps=2 format=3 uid="uid://bjej2yjbgrj5"]
+
+[sub_resource type="GDScript" id="GDScript_qs1vi"]
+script/source = "extends Panel
+
+var current_tile = null
+
+func _ready():
+	pass
+
+
+func set_tile(new_tile):
+	current_tile = new_tile
+
+
+func update_panel():
+	pass
+"
+
+[node name="Info_panel" type="Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = SubResource("GDScript_qs1vi")
+
+[node name="Label" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "info"

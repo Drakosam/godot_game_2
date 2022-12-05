@@ -1,25 +1,29 @@
-[gd_scene load_steps=4 format=3 uid="uid://bsqyk7a8hh3a0"]
+[gd_scene load_steps=5 format=3 uid="uid://bsqyk7a8hh3a0"]
 
 [ext_resource type="PackedScene" uid="uid://clhr722hmqxv1" path="res://terrain_layer.tscn" id="1_4ffcw"]
+[ext_resource type="PackedScene" uid="uid://becfm8povyel" path="res://gui/action_menu.tscn" id="2_u1g1r"]
 
 [sub_resource type="GDScript" id="GDScript_mf1ag"]
 script/source = "extends Node2D
 
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
+	$layer_undergrand.set_leyer_tiles(true)
+	
+	$Timer.start(.25)
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
-
-
-func _on_terrain_layer_setup_camera(is_visible, jump_position):
-	print(is_visible,' ',jump_position)
-	if is_visible:
+func _on_terrain_layer_setup_camera(layer_is_visible, jump_position):
+	if layer_is_visible:
 		$Camera2D.position = jump_position
+
+
+func _on_timer_timeout():
+	$layer_undergrand.act()
+	
+
+func _on_layer_undergrand_selected_tile(tile_selected):
+	$ActionMenu.set_tile_menu(tile_selected)
 "
 
 [sub_resource type="GDScript" id="GDScript_w7hon"]
@@ -30,7 +34,7 @@ func _ready():
 	pass # Replace with function body.
 
 
-func _process(delta):
+func _process(_delta):
 	pass
 
 func _unhandled_input(event):
@@ -42,12 +46,17 @@ func _unhandled_input(event):
 [node name="MainNode" type="Node2D"]
 script = SubResource("GDScript_mf1ag")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="layer_undergrand" parent="." instance=ExtResource("1_4ffcw")]
 
-[node name="terrain_layer" parent="." instance=ExtResource("1_4ffcw")]
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.25
 
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true
 script = SubResource("GDScript_w7hon")
 
-[connection signal="setup_camera" from="terrain_layer" to="." method="_on_terrain_layer_setup_camera"]
+[node name="ActionMenu" parent="." instance=ExtResource("2_u1g1r")]
+
+[connection signal="selected_tile" from="layer_undergrand" to="." method="_on_layer_undergrand_selected_tile"]
+[connection signal="setup_camera" from="layer_undergrand" to="." method="_on_terrain_layer_setup_camera"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

@@ -1,14 +1,18 @@
-[gd_scene load_steps=2 format=3 uid="uid://cws67kmxthwjj"]
+[gd_scene load_steps=3 format=3 uid="uid://d4bvgl1hp4a5j"]
 
-[sub_resource type="GDScript" id="GDScript_ehikw"]
+[ext_resource type="PackedScene" uid="uid://dg217dy7rx7tj" path="res://components/background_tile_logic.tscn" id="1_qt4s6"]
+
+[sub_resource type="GDScript" id="GDScript_skstf"]
 script/source = "extends Node2D
 
 var mouse_over = false
 
-var cursor_shodow = '#999999'
-var normal_cursor = '#ffffff'
-var odd_normal_corsor = '#dddddd'
-var mark_color = '#000000'
+var color_cursor_shodow = '#999999'
+var color_neighborhood = '#99999950'
+var color_normal_cursor = '#ffffff'
+var color_odd_normal_corsor = '#dddddd'
+var color_mark = '#000000'
+var color_tile_is_selected = '#005eb5'
 var is_marked = false
 
 var tile_top = null
@@ -24,14 +28,25 @@ var world_posytion_y = 0
 var is_odd = false
 var my_ring_num = -1
 var is_active = false
+var is_selected = false
+var is_discover = false
+var is_neighborhood_to_discover = true
+
+var logic = null
+
+signal tile_selected(tile)
 
 func _ready():
 	$Polygon2D.visible= false
 	$StaticBody2D.visible = false
+	visible = false
+	logic = $Background_tile_logic
+	
 	
 func setup_posytion_in_world(wx, wy):
 	world_posytion_y = wy
 	world_posytion_x = wx
+
 
 func setup_neighborhood(map):
 	if world_posytion_y - 1 >= 0 :
@@ -42,7 +57,6 @@ func setup_neighborhood(map):
 		
 	
 	if world_posytion_x % 2 == 1:
-		pass	
 		if world_posytion_x - 1 >= 0:
 			tile_top_l = map[world_posytion_y][world_posytion_x - 1]
 			
@@ -69,36 +83,53 @@ func setup_neighborhood(map):
 			if world_posytion_y - 1 >= 0:
 				tile_top_r = map[world_posytion_y-1][world_posytion_x + 1]
 	
+	logic.set_logi_neighborhood(tile_top,
+								tile_top_r,
+								tile_top_l,
+								tile_botton,
+								tile_botton_r,
+								tile_botton_l)
+	
 	
 func setup_odd(_is_odd):
 	is_odd = _is_odd
 	queue_redraw()
 
+
 func _draw():
 	if mouse_over:
-		$Polygon2D.color = cursor_shodow
+		$Polygon2D.color = color_cursor_shodow
 	else:
-		if is_marked:
-			$Polygon2D.color = mark_color
+		if is_selected:
+			$Polygon2D.color = color_tile_is_selected
+			return
+		
+		if is_neighborhood_to_discover and not is_discover:
+			$Polygon2D.color = color_neighborhood
 			return
 			
 		if is_odd:
-			$Polygon2D.color = odd_normal_corsor
+			$Polygon2D.color = color_odd_normal_corsor
 		else:
-			$Polygon2D.color = normal_cursor
+			$Polygon2D.color = color_normal_cursor
 		
 	
 func _on_static_body_2d_mouse_entered():
 	mouse_over = true
 	queue_redraw()
 
+
 func _on_static_body_2d_mouse_exited():
 	mouse_over = false
 	queue_redraw()
 	
+	
 func _is_marked():
-	is_marked=true
-	queue_redraw()
+	if is_active:
+		visible = true
+		is_neighborhood_to_discover = true
+		queue_redraw()
+	
 	
 func setup_system(ring_num):
 	if ring_num > my_ring_num:
@@ -125,7 +156,6 @@ func setup_system(ring_num):
 			tile_botton_r.setup_system(my_ring_num - 1)
 		
 		
-
 func _mark_neighborhood():
 	if tile_top:
 		tile_top._is_marked()
@@ -145,10 +175,11 @@ func _mark_neighborhood():
 	if tile_botton_r:
 		tile_botton_r._is_marked()
 
-func _on_static_body_2d_input_event(viewport, event, shape_idx):
+
+func _on_static_body_2d_input_event(_viewport, event, _shape_idx):
 	if event is InputEventMouseButton and not event.is_echo():
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			pass
+			emit_signal('tile_selected', self)
 
 
 func _on_visible_on_screen_enabler_2d_screen_entered():
@@ -156,14 +187,36 @@ func _on_visible_on_screen_enabler_2d_screen_entered():
 		$Polygon2D.visible = true
 		$StaticBody2D.visible = true
 
+
 func _on_visible_on_screen_enabler_2d_screen_exited():
 	if is_active:
 		$Polygon2D.visible= false
 		$StaticBody2D.visible = false
+		
+
+func proces_tile_selected(tile):
+	
+	if tile == self:
+		is_selected = true
+	else:
+		is_selected = false
+	queue_redraw()
+
+
+func discover_tile():
+	if is_active:
+		is_discover = true
+		visible = true
+		_mark_neighborhood()
+		queue_redraw()
+	
+	
+func _on_background_tile_logic_signal_discaver_tile():
+	discover_tile()
 "
 
 [node name="TileNode" type="Node2D"]
-script = SubResource("GDScript_ehikw")
+script = SubResource("GDScript_skstf")
 
 [node name="Polygon2D" type="Polygon2D" parent="."]
 polygon = PackedVector2Array(-16, -28, -32, 0, -16, 28, 16, 28, 32, 0, 16, -28)
@@ -178,8 +231,11 @@ polygon = PackedVector2Array(-16, -28, -32, 0, -16, 28, 16, 28, 32, 0, 16, -28)
 position = Vector2(0.499999, 0.5)
 scale = Vector2(3.55, 3.35)
 
+[node name="Background_tile_logic" parent="." instance=ExtResource("1_qt4s6")]
+
 [connection signal="input_event" from="StaticBody2D" to="." method="_on_static_body_2d_input_event"]
 [connection signal="mouse_entered" from="StaticBody2D" to="." method="_on_static_body_2d_mouse_entered"]
 [connection signal="mouse_exited" from="StaticBody2D" to="." method="_on_static_body_2d_mouse_exited"]
 [connection signal="screen_entered" from="VisibleOnScreenEnabler2D" to="." method="_on_visible_on_screen_enabler_2d_screen_entered"]
 [connection signal="screen_exited" from="VisibleOnScreenEnabler2D" to="." method="_on_visible_on_screen_enabler_2d_screen_exited"]
+[connection signal="signal_discaver_tile" from="Background_tile_logic" to="." method="_on_background_tile_logic_signal_discaver_tile"]

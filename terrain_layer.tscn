@@ -14,7 +14,10 @@ var world = []
 var tile_list = []
 var tile_active = []
 
+var rng = RandomNumberGenerator.new()
+
 signal setup_camera(is_visible, jump_position)
+signal selected_tile(tile_selected)
 
 func _ready():
 	
@@ -32,6 +35,7 @@ func _ready():
 			tile.position.y = (iy+1) * (v_size * 2 + 1) + (v_size *(ix%2))
 			
 			tile.setup_posytion_in_world(ix, iy)
+			tile.connect('tile_selected',Callable(self,'proces_signal_tile_selected'))
 			
 			add_child(tile)
 			tile_list.append(tile)
@@ -44,8 +48,7 @@ func _ready():
 	
 	world[(size_of_layer-1)/2][(size_of_layer-1)/2].setup_system((size_of_layer-1)/2)
 	
-	emit_signal('setup_camera', visible, world[(size_of_layer-1)/2][(size_of_layer-1)/2].position)
-		
+	
 	for tile in tile_list:
 		if tile.my_ring_num < 0:
 			tile.visible = false
@@ -53,8 +56,27 @@ func _ready():
 			tile.is_active = true
 			tile_active.append(tile)
 			
-	
-			
+func set_leyer_tiles(is_active_layer):
+	if is_active_layer:
+		rng.randomize()
+		var selected_tile_no = rng.randi_range(0,len(tile_active))
+		var selected_tile_item = tile_active[selected_tile_no]
+		emit_signal('setup_camera', visible, selected_tile_item.position)
+		selected_tile_item.proces_tile_selected(selected_tile_item)
+		selected_tile_item.discover_tile()
+		emit_signal('selected_tile', selected_tile_item)
+		selected_tile_item.logic.pop = 50
+
+
+func proces_signal_tile_selected(tile):
+	for tile_item in tile_active:
+		tile_item.proces_tile_selected(tile)
+	emit_signal('selected_tile', tile)
+		
+
+func act():
+	for tile in tile_active:
+		tile.logic.act()
 "
 
 [node name="terrain_layer" type="Node2D"]

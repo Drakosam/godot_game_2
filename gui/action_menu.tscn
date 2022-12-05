@@ -1,0 +1,196 @@
+[gd_scene load_steps=4 format=3 uid="uid://becfm8povyel"]
+
+[ext_resource type="PackedScene" uid="uid://bjej2yjbgrj5" path="res://gui/info_panel.tscn" id="1_p33xd"]
+[ext_resource type="PackedScene" uid="uid://jo1uoujd1101" path="res://gui/exploration_panel.tscn" id="2_jiu5i"]
+
+[sub_resource type="GDScript" id="GDScript_cqnco"]
+script/source = "extends CanvasLayer
+
+var current_tile = null
+var label_name = null
+var label_pop = null
+
+
+func _ready():
+	label_name = $right_menu/VBoxContainer/HBoxContainer/Label_Name
+	label_pop = $right_menu/VBoxContainer/HBoxContainer2/Label_Pop_Count
+	hide_all_panel()
+	$right_menu/VBoxContainer/Info_panel.visible = true
+
+func set_tile_menu(new_tile):
+	current_tile = new_tile
+	label_pop.text = str(current_tile.logic.pop)
+	label_name.text = current_tile.logic.name_tile
+	$right_menu/VBoxContainer/Exploration_panel.set_tile(new_tile)
+	$right_menu/VBoxContainer/Info_panel.set_tile(new_tile)
+
+
+func hide_all_panel():
+	$right_menu/VBoxContainer/Info_panel.visible = false
+	$right_menu/VBoxContainer/Exploration_panel.visible = false
+
+
+func _on_info_btt_button_down():
+	hide_all_panel()
+	$right_menu/VBoxContainer/Info_panel.visible = true
+
+
+func _on_exploration_btt_button_down():
+	hide_all_panel()
+	$right_menu/VBoxContainer/Exploration_panel.visible = true
+
+
+func _on_timer_timeout():
+	label_pop.text = str(current_tile.logic.pop)
+	$right_menu/VBoxContainer/Exploration_panel.update_panel()
+	$right_menu/VBoxContainer/Info_panel.update_panel()
+"
+
+[node name="ActionMenu" type="CanvasLayer"]
+script = SubResource("GDScript_cqnco")
+
+[node name="Panel2" type="Panel" parent="."]
+offset_right = 1.0
+offset_bottom = 1.0
+
+[node name="right_menu" type="Panel" parent="."]
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -300.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="right_menu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="right_menu/VBoxContainer"]
+layout_mode = 2
+offset_right = 300.0
+offset_bottom = 26.0
+
+[node name="Label" type="Label" parent="right_menu/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+offset_right = 141.0
+offset_bottom = 26.0
+size_flags_horizontal = 3
+text = "Name
+"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="right_menu/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+offset_left = 145.0
+offset_right = 154.0
+offset_bottom = 26.0
+text = "::"
+
+[node name="Label_Name" type="Label" parent="right_menu/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+offset_left = 158.0
+offset_right = 300.0
+offset_bottom = 26.0
+size_flags_horizontal = 3
+text = "ssssss"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="right_menu/VBoxContainer"]
+layout_mode = 2
+offset_top = 30.0
+offset_right = 300.0
+offset_bottom = 56.0
+
+[node name="Label" type="Label" parent="right_menu/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+offset_right = 141.0
+offset_bottom = 26.0
+size_flags_horizontal = 3
+text = "Avalible Pop"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Label2" type="Label" parent="right_menu/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+offset_left = 145.0
+offset_right = 154.0
+offset_bottom = 26.0
+text = "::"
+
+[node name="Label_Pop_Count" type="Label" parent="right_menu/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+offset_left = 158.0
+offset_right = 300.0
+offset_bottom = 26.0
+size_flags_horizontal = 3
+text = "000"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Info_panel" parent="right_menu/VBoxContainer" instance=ExtResource("1_p33xd")]
+layout_mode = 2
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_top = 60.0
+offset_right = 300.0
+offset_bottom = 648.0
+grow_horizontal = 1
+grow_vertical = 1
+size_flags_vertical = 3
+
+[node name="Exploration_panel" parent="right_menu/VBoxContainer" instance=ExtResource("2_jiu5i")]
+visible = false
+layout_mode = 2
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_top = 341.0
+offset_right = 300.0
+offset_bottom = 648.0
+grow_horizontal = 1
+grow_vertical = 1
+size_flags_vertical = 3
+
+[node name="left_menu" type="Panel" parent="."]
+custom_minimum_size = Vector2(50, 0)
+anchors_preset = 9
+anchor_bottom = 1.0
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="left_menu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Info_btt" type="Button" parent="left_menu/VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+offset_right = 50.0
+offset_bottom = 50.0
+text = "Stat"
+
+[node name="Exploration_btt" type="Button" parent="left_menu/VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+offset_top = 54.0
+offset_right = 50.0
+offset_bottom = 104.0
+text = "Exp"
+
+[node name="Timer" type="Timer" parent="."]
+autostart = true
+
+[connection signal="button_down" from="left_menu/VBoxContainer/Info_btt" to="." method="_on_info_btt_button_down"]
+[connection signal="button_down" from="left_menu/VBoxContainer/Exploration_btt" to="." method="_on_exploration_btt_button_down"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
