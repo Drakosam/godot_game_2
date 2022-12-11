@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://dg217dy7rx7tj" path="res://components/background_tile_logic.tscn" id="1_qt4s6"]
 
-[sub_resource type="GDScript" id="GDScript_skstf"]
+[sub_resource type="GDScript" id="GDScript_eypgo"]
 script/source = "extends Node2D
 
 var mouse_over = false
@@ -216,7 +216,7 @@ func _on_background_tile_logic_signal_discaver_tile():
 "
 
 [node name="TileNode" type="Node2D"]
-script = SubResource("GDScript_skstf")
+script = SubResource("GDScript_eypgo")
 
 [node name="Polygon2D" type="Polygon2D" parent="."]
 polygon = PackedVector2Array(-16, -28, -32, 0, -16, 28, 16, 28, 32, 0, 16, -28)

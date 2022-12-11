@@ -1,0 +1,39 @@
+[gd_scene load_steps=2 format=3 uid="uid://cfff7fcaljo2"]
+
+[ext_resource type="Script" path="res://components/top_menu.gd" id="1_ey8kv"]
+
+[node name="Top_Menu" type="Panel"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 50.0
+grow_horizontal = 2
+script = ExtResource("1_ey8kv")
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -228.0
+offset_top = 10.0
+offset_right = -18.0
+offset_bottom = -10.0
+grow_horizontal = 0
+grow_vertical = 2
+max_value = 50.0
+show_percentage = false
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -229.0
+offset_top = 9.0
+offset_right = -16.0
+offset_bottom = -7.0
+grow_horizontal = 0
+grow_vertical = 2
+text = "Cycle"
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -77,6 +77,12 @@ func proces_signal_tile_selected(tile):
 func act():
 	for tile in tile_active:
 		tile.logic.act()
+
+
+func cycle_update_logic():
+	print('xx')
+	for tile in tile_active:
+		tile.logic.cycle_update_logic()
 "
 
 [node name="terrain_layer" type="Node2D"]

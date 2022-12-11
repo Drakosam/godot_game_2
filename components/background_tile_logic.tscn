@@ -67,8 +67,10 @@ func set_logi_neighborhood(
 
 
 func act():
+	#cycle_update_logic()
 	if current_action == 'idle':
 		return
+		
 	if current_action == 'discaver_tile':
 		rng.randomize()
 		var pic = rng.randi_range(0,99)
@@ -77,12 +79,31 @@ func act():
 			emit_signal('signal_discaver_tile')
 			current_action = 'idle'
 		return
-		
+
 
 func explore_neighborhood(neighborhood):
 	if pop>4:
 		pop -= 5
 	neighborhood.try_discaver_tile(5)
+
+
+func cycle_update_logic():
+	_population_attrition()
+
+
+func _population_attrition():
+	if pop < 1:
+		return
+		
+	rng.randomize()
+	var pop_lost_chance = rng.randi_range(0,999)
+	
+	pop_lost_chance += max_pop - pop  
+	
+	print(pop_lost_chance,' <<<<<<< ')
+		
+	if pop_lost_chance > 960:
+		pop -= 1
 "
 
 [node name="Background_tile_logic" type="Node"]

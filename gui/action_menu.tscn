@@ -1,7 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://becfm8povyel"]
+[gd_scene load_steps=6 format=3 uid="uid://becfm8povyel"]
 
 [ext_resource type="PackedScene" uid="uid://bjej2yjbgrj5" path="res://gui/info_panel.tscn" id="1_p33xd"]
 [ext_resource type="PackedScene" uid="uid://jo1uoujd1101" path="res://gui/exploration_panel.tscn" id="2_jiu5i"]
+[ext_resource type="PackedScene" uid="uid://cfff7fcaljo2" path="res://components/top_menu.tscn" id="3_384b8"]
+[ext_resource type="PackedScene" uid="uid://eva5yg0m8jsm" path="res://gui/pop_panel.tscn" id="3_q7kp4"]
 
 [sub_resource type="GDScript" id="GDScript_cqnco"]
 script/source = "extends CanvasLayer
@@ -17,6 +19,7 @@ func _ready():
 	hide_all_panel()
 	$right_menu/VBoxContainer/Info_panel.visible = true
 
+
 func set_tile_menu(new_tile):
 	current_tile = new_tile
 	label_pop.text = str(current_tile.logic.pop)
@@ -28,7 +31,7 @@ func set_tile_menu(new_tile):
 func hide_all_panel():
 	$right_menu/VBoxContainer/Info_panel.visible = false
 	$right_menu/VBoxContainer/Exploration_panel.visible = false
-
+	$right_menu/VBoxContainer/Pop_panel.visible = false
 
 func _on_info_btt_button_down():
 	hide_all_panel()
@@ -44,6 +47,15 @@ func _on_timer_timeout():
 	label_pop.text = str(current_tile.logic.pop)
 	$right_menu/VBoxContainer/Exploration_panel.update_panel()
 	$right_menu/VBoxContainer/Info_panel.update_panel()
+
+
+func cycle_update_logic(pass_value):
+	$Top_Menu.cycle_update_logic(pass_value)
+
+
+func _on_pop_btt_button_down():
+	hide_all_panel()
+	$right_menu/VBoxContainer/Pop_panel.visible = true
 "
 
 [node name="ActionMenu" type="CanvasLayer"]
@@ -72,13 +84,9 @@ grow_vertical = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="right_menu/VBoxContainer"]
 layout_mode = 2
-offset_right = 300.0
-offset_bottom = 26.0
 
 [node name="Label" type="Label" parent="right_menu/VBoxContainer/HBoxContainer"]
 layout_mode = 2
-offset_right = 141.0
-offset_bottom = 26.0
 size_flags_horizontal = 3
 text = "Name
 "
@@ -87,16 +95,10 @@ vertical_alignment = 1
 
 [node name="Label2" type="Label" parent="right_menu/VBoxContainer/HBoxContainer"]
 layout_mode = 2
-offset_left = 145.0
-offset_right = 154.0
-offset_bottom = 26.0
 text = "::"
 
 [node name="Label_Name" type="Label" parent="right_menu/VBoxContainer/HBoxContainer"]
 layout_mode = 2
-offset_left = 158.0
-offset_right = 300.0
-offset_bottom = 26.0
 size_flags_horizontal = 3
 text = "ssssss"
 horizontal_alignment = 1
@@ -104,14 +106,9 @@ vertical_alignment = 1
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="right_menu/VBoxContainer"]
 layout_mode = 2
-offset_top = 30.0
-offset_right = 300.0
-offset_bottom = 56.0
 
 [node name="Label" type="Label" parent="right_menu/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
-offset_right = 141.0
-offset_bottom = 26.0
 size_flags_horizontal = 3
 text = "Avalible Pop"
 horizontal_alignment = 1
@@ -119,16 +116,10 @@ vertical_alignment = 1
 
 [node name="Label2" type="Label" parent="right_menu/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
-offset_left = 145.0
-offset_right = 154.0
-offset_bottom = 26.0
 text = "::"
 
 [node name="Label_Pop_Count" type="Label" parent="right_menu/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
-offset_left = 158.0
-offset_right = 300.0
-offset_bottom = 26.0
 size_flags_horizontal = 3
 text = "000"
 horizontal_alignment = 1
@@ -136,27 +127,16 @@ vertical_alignment = 1
 
 [node name="Info_panel" parent="right_menu/VBoxContainer" instance=ExtResource("1_p33xd")]
 layout_mode = 2
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_top = 60.0
-offset_right = 300.0
-offset_bottom = 648.0
-grow_horizontal = 1
-grow_vertical = 1
 size_flags_vertical = 3
 
 [node name="Exploration_panel" parent="right_menu/VBoxContainer" instance=ExtResource("2_jiu5i")]
 visible = false
 layout_mode = 2
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_top = 341.0
-offset_right = 300.0
-offset_bottom = 648.0
-grow_horizontal = 1
-grow_vertical = 1
+size_flags_vertical = 3
+
+[node name="Pop_panel" parent="right_menu/VBoxContainer" instance=ExtResource("3_q7kp4")]
+visible = false
+layout_mode = 2
 size_flags_vertical = 3
 
 [node name="left_menu" type="Panel" parent="."]
@@ -176,21 +156,26 @@ grow_vertical = 2
 [node name="Info_btt" type="Button" parent="left_menu/VBoxContainer"]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-offset_right = 50.0
-offset_bottom = 50.0
 text = "Stat"
 
 [node name="Exploration_btt" type="Button" parent="left_menu/VBoxContainer"]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
-offset_top = 54.0
-offset_right = 50.0
-offset_bottom = 104.0
 text = "Exp"
+
+[node name="Pop_btt" type="Button" parent="left_menu/VBoxContainer"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+text = "Pop"
 
 [node name="Timer" type="Timer" parent="."]
 autostart = true
 
+[node name="Top_Menu" parent="." instance=ExtResource("3_384b8")]
+offset_left = 51.0
+offset_right = -301.0
+
 [connection signal="button_down" from="left_menu/VBoxContainer/Info_btt" to="." method="_on_info_btt_button_down"]
 [connection signal="button_down" from="left_menu/VBoxContainer/Exploration_btt" to="." method="_on_exploration_btt_button_down"]
+[connection signal="button_down" from="left_menu/VBoxContainer/Pop_btt" to="." method="_on_pop_btt_button_down"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

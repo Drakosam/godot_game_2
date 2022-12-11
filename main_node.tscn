@@ -6,11 +6,13 @@
 [sub_resource type="GDScript" id="GDScript_mf1ag"]
 script/source = "extends Node2D
 
+var curent_cycle_time = 0
 
 func _ready():
 	$layer_undergrand.set_leyer_tiles(true)
 	
-	$Timer.start(.25)
+	$ActTimer.start(.25)
+	$CycleTimer.start(1)
 
 
 func _on_terrain_layer_setup_camera(layer_is_visible, jump_position):
@@ -20,10 +22,18 @@ func _on_terrain_layer_setup_camera(layer_is_visible, jump_position):
 
 func _on_timer_timeout():
 	$layer_undergrand.act()
-	
+
 
 func _on_layer_undergrand_selected_tile(tile_selected):
 	$ActionMenu.set_tile_menu(tile_selected)
+
+
+func _on_cycle_timer_timeout():
+	curent_cycle_time += 1
+	$ActionMenu.cycle_update_logic(curent_cycle_time)
+	if curent_cycle_time >= 50:
+		curent_cycle_time = 0
+		$layer_undergrand.cycle_update_logic()
 "
 
 [sub_resource type="GDScript" id="GDScript_w7hon"]
@@ -48,15 +58,18 @@ script = SubResource("GDScript_mf1ag")
 
 [node name="layer_undergrand" parent="." instance=ExtResource("1_4ffcw")]
 
-[node name="Timer" type="Timer" parent="."]
-wait_time = 0.25
-
 [node name="Camera2D" type="Camera2D" parent="."]
 current = true
 script = SubResource("GDScript_w7hon")
 
 [node name="ActionMenu" parent="." instance=ExtResource("2_u1g1r")]
 
+[node name="ActTimer" type="Timer" parent="."]
+wait_time = 0.25
+
+[node name="CycleTimer" type="Timer" parent="."]
+
 [connection signal="selected_tile" from="layer_undergrand" to="." method="_on_layer_undergrand_selected_tile"]
 [connection signal="setup_camera" from="layer_undergrand" to="." method="_on_terrain_layer_setup_camera"]
-[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="timeout" from="ActTimer" to="." method="_on_timer_timeout"]
+[connection signal="timeout" from="CycleTimer" to="." method="_on_cycle_timer_timeout"]
