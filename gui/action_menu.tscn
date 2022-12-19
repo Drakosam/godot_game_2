@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://becfm8povyel"]
+[gd_scene load_steps=7 format=3 uid="uid://becfm8povyel"]
 
 [ext_resource type="PackedScene" uid="uid://bjej2yjbgrj5" path="res://gui/info_panel.tscn" id="1_p33xd"]
 [ext_resource type="PackedScene" uid="uid://jo1uoujd1101" path="res://gui/exploration_panel.tscn" id="2_jiu5i"]
 [ext_resource type="PackedScene" uid="uid://cfff7fcaljo2" path="res://components/top_menu.tscn" id="3_384b8"]
 [ext_resource type="PackedScene" uid="uid://eva5yg0m8jsm" path="res://gui/pop_panel.tscn" id="3_q7kp4"]
+[ext_resource type="PackedScene" uid="uid://cs6kycj0yoqnt" path="res://gui/current_action_panel.tscn" id="4_erg3e"]
 
 [sub_resource type="GDScript" id="GDScript_cqnco"]
 script/source = "extends CanvasLayer
@@ -32,6 +33,7 @@ func hide_all_panel():
 	$right_menu/VBoxContainer/Info_panel.visible = false
 	$right_menu/VBoxContainer/Exploration_panel.visible = false
 	$right_menu/VBoxContainer/Pop_panel.visible = false
+	$right_menu/VBoxContainer/Current_action_panel.visible = false
 
 func _on_info_btt_button_down():
 	hide_all_panel()
@@ -41,6 +43,7 @@ func _on_info_btt_button_down():
 func _on_exploration_btt_button_down():
 	hide_all_panel()
 	$right_menu/VBoxContainer/Exploration_panel.visible = true
+	$right_menu/VBoxContainer/Current_action_panel.visible = true
 
 
 func _on_timer_timeout():
@@ -56,6 +59,7 @@ func cycle_update_logic(pass_value):
 func _on_pop_btt_button_down():
 	hide_all_panel()
 	$right_menu/VBoxContainer/Pop_panel.visible = true
+	$right_menu/VBoxContainer/Current_action_panel.visible = true
 "
 
 [node name="ActionMenu" type="CanvasLayer"]
@@ -135,6 +139,11 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="Pop_panel" parent="right_menu/VBoxContainer" instance=ExtResource("3_q7kp4")]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Current_action_panel" parent="right_menu/VBoxContainer" instance=ExtResource("4_erg3e")]
 visible = false
 layout_mode = 2
 size_flags_vertical = 3

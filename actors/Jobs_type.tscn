@@ -1,0 +1,56 @@
+[gd_scene load_steps=2 format=3 uid="uid://bbt5m4n7ixp37"]
+
+[sub_resource type="GDScript" id="GDScript_a6ely"]
+script/source = "extends Node
+
+var jobs = {
+	'sector_discaver':{
+		'name':'Sector Discaver',
+		'max_pop':5,
+		'chance':0.1,
+		'allow_many':true,
+		'allow_finish_on_fellow_succes':true,
+		'time':100, # in s/4
+		'single_action': false,
+		'allow_cancel':true,
+		'risk_rate':0.2,
+		'reward':{},
+		'penalty':{
+			'pop_min':1,
+			'pop_max':3
+		}
+	},
+	
+	'recruit_base': {
+		'name':'get new members',
+		'min_pop':5,
+		'chance':0.3,
+		'allow_many':true,
+		'allow_finish_on_fellow_succes':false,
+		'time':100, # in s/4
+		'single_action': true,
+		'allow_cancel':true,
+		'risk_rate':0.02,
+		'reward':{
+			'pop_min':1,
+			'pop_max':5
+		},
+		'penalty':{
+			'pop_min':1,
+			'pop_max':5
+		}
+	}
+}
+
+
+func _ready():
+	pass
+	
+func get_job(job_name):
+	if job_name in jobs:
+		return {'status':true, 'job':jobs[job_name].duplicate()}
+	return {'status':false}
+"
+
+[node name="Job_type" type="Node"]
+script = SubResource("GDScript_a6ely")

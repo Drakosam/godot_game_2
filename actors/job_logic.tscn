@@ -1,0 +1,100 @@
+[gd_scene load_steps=3 format=3 uid="uid://d06ts6jrplq0q"]
+
+[ext_resource type="PackedScene" uid="uid://bbt5m4n7ixp37" path="res://actors/Jobs_type.tscn" id="1_8i5yh"]
+
+[sub_resource type="GDScript" id="GDScript_6swl6"]
+script/source = "extends Node
+
+var job_types = null
+var job_quqe = []
+
+var rng = RandomNumberGenerator.new()
+
+func _ready():
+	job_types = $Job_type
+	
+
+func act():
+	for job in job_quqe:
+		job['progress']['step'] += 1
+
+
+func add_job(_job_name='',_pop=0):
+	var result = job_types.get_job(_job_name)
+	if result['status']:
+		var job = result['job'] 
+		job_quqe.append(job)
+		job['progress'] = {
+			'step' : 0,
+			'pop': _pop
+		}
+	return false
+
+
+func jobs_status():
+	return []
+
+
+func jobs_result():
+	var temp_jobs = []
+	var done_jobs = []
+	for job in job_quqe:
+		if job['progress']['step'] >= job['time']:
+			done_jobs.append(job)
+		else:
+			temp_jobs.append(job)
+	
+	job_quqe=temp_jobs
+	
+	return _resolve_job(done_jobs)
+	
+	
+func _resolve_job(done_jobs):
+	rng.randomize()
+	var result_list = []
+	for job in done_jobs:
+		
+		var dice_roll = rng.randi_range(0,999)
+		
+		if dice_roll < 1000 * job['chance']:
+			var res = {
+				'success': true,
+				'pop': job['progress']['pop'],
+				'name': job['name']}
+			if 'pop_min' in job['reward']:
+				var p_min = job['reward']['pop_min']
+				var p_max = job['reward']['pop_max']
+				var pop_gain = rng.randi_range(p_min,p_max)
+				res =+ pop_gain
+			result_list.append(res)
+			print('succes')
+		else:
+			dice_roll = rng.randi_range(0,999)
+			
+			if dice_roll < 1000 * job['risk_rate']:
+				if 'pop_min' in job['penalty']:
+					var p_min = job['penalty']['pop_min']
+					var p_max = job['penalty']['pop_max']
+					var pop_loss = rng.randi_range(p_min,p_max)
+					job['progress']['pop'] -= pop_loss
+					
+			job['progress']['step'] = 0
+			
+			if job['progress']['pop'] > 0 and not job['single_action']:
+				job_quqe.append(job)
+				print('try agine')
+			else:
+				var res = {
+					'name': job['name'],
+					'success':true,
+					'pop':job['progress']['pop']
+					}
+				result_list.append(res)
+				print('faill')
+	return result_list
+"
+
+[node name="Job_logic" type="Node"]
+script = SubResource("GDScript_6swl6")
+
+[node name="Job_type" parent="." instance=ExtResource("1_8i5yh")]

@@ -1,0 +1,115 @@
+[gd_scene load_steps=3 format=3 uid="uid://b1blb31q36ogg"]
+
+[ext_resource type="PackedScene" uid="uid://d06ts6jrplq0q" path="res://actors/job_logic.tscn" id="1_d3kxy"]
+
+[sub_resource type="GDScript" id="GDScript_iu54t"]
+script/source = "extends Node
+
+
+var name_tile = 'name'
+var rand_string = \"abcdefghijklmnopqrstuvwxyz1234567890\".to_upper()
+var rng = RandomNumberGenerator.new()
+signal signal_discaver_tile()
+
+var current_action = \"idle\"
+
+var tile_top = null
+var tile_top_r = null
+var tile_top_l = null
+var tile_botton = null
+var tile_botton_r = null
+var tile_botton_l = null
+
+var pop = 0
+var max_pop = 50
+var pop_lock = 0
+
+var job_logic = null
+
+func _ready():
+	name_tile = _generate_word(9)
+	job_logic = $Job_logic
+
+
+func _generate_word(length):
+	var word=\"\"
+	var n_char = len(rand_string)
+	for _i in range(length):
+		word += rand_string[randi()% n_char]
+	return word
+
+
+func try_discaver_tile(new_pop):
+	job_logic.add_job('sector_discaver', new_pop)
+	pop += new_pop
+	current_action = 'discaver_tile'
+	
+
+func set_logi_neighborhood(
+	_tile_top,
+	_tile_top_r,
+	_tile_top_l,
+	_tile_botton,
+	_tile_botton_r,
+	_tile_botton_l
+):
+	if _tile_top:
+		tile_top = _tile_top.logic
+	
+	if _tile_botton:
+		tile_botton = _tile_botton.logic
+	
+	if _tile_top_r:
+		tile_top_r = _tile_top_r.logic
+	
+	if _tile_top_l:
+		tile_top_l = _tile_top_l.logic
+	
+	if tile_botton_r:
+		tile_botton_r = _tile_botton_r.logic
+	
+	if _tile_botton_l:
+		tile_botton_l = _tile_botton_l.logic
+
+
+func act(): 
+	if get_parent().visible :
+		job_logic.act()
+		_job_resolve_proces()
+
+func _job_resolve_proces():
+	var job_done_list = job_logic.jobs_result()
+	for job in job_done_list:
+		if job['success'] and job['name'] == 'Sector Discaver':
+			emit_signal('signal_discaver_tile')
+		
+		pop += job['pop']
+
+
+func explore_neighborhood(neighborhood):
+	if pop>4:
+		pop -= 5
+	neighborhood.try_discaver_tile(5)
+
+
+func cycle_update_logic():
+	_population_attrition()
+
+
+func _population_attrition():
+	if pop-pop_lock < 1:
+		return
+		
+	rng.randomize()
+	var pop_lost_chance = rng.randi_range(0,999)
+	
+	pop_lost_chance += max_pop - pop  
+		
+	if pop_lost_chance > 960:
+		pop -= 1
+"
+
+[node name="Tile_logic" type="Node"]
+script = SubResource("GDScript_iu54t")
+
+[node name="Job_logic" parent="." instance=ExtResource("1_d3kxy")]

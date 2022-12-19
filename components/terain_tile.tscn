@@ -1,8 +1,8 @@
 [gd_scene load_steps=3 format=3 uid="uid://d4bvgl1hp4a5j"]
 
-[ext_resource type="PackedScene" uid="uid://dg217dy7rx7tj" path="res://components/background_tile_logic.tscn" id="1_qt4s6"]
+[ext_resource type="PackedScene" uid="uid://b1blb31q36ogg" path="res://actors/tile_logic.tscn" id="1_or4ay"]
 
-[sub_resource type="GDScript" id="GDScript_eypgo"]
+[sub_resource type="GDScript" id="GDScript_tpgl5"]
 script/source = "extends Node2D
 
 var mouse_over = false
@@ -41,6 +41,7 @@ func _ready():
 	$StaticBody2D.visible = false
 	visible = false
 	logic = $Background_tile_logic
+	logic.connect('signal_discaver_tile',Callable(self,'_on_background_tile_logic_signal_discaver_tile'))
 	
 	
 func setup_posytion_in_world(wx, wy):
@@ -216,7 +217,7 @@ func _on_background_tile_logic_signal_discaver_tile():
 "
 
 [node name="TileNode" type="Node2D"]
-script = SubResource("GDScript_eypgo")
+script = SubResource("GDScript_tpgl5")
 
 [node name="Polygon2D" type="Polygon2D" parent="."]
 polygon = PackedVector2Array(-16, -28, -32, 0, -16, 28, 16, 28, 32, 0, 16, -28)
@@ -231,11 +232,10 @@ polygon = PackedVector2Array(-16, -28, -32, 0, -16, 28, 16, 28, 32, 0, 16, -28)
 position = Vector2(0.499999, 0.5)
 scale = Vector2(3.55, 3.35)
 
-[node name="Background_tile_logic" parent="." instance=ExtResource("1_qt4s6")]
+[node name="Background_tile_logic" parent="." instance=ExtResource("1_or4ay")]
 
 [connection signal="input_event" from="StaticBody2D" to="." method="_on_static_body_2d_input_event"]
 [connection signal="mouse_entered" from="StaticBody2D" to="." method="_on_static_body_2d_mouse_entered"]
 [connection signal="mouse_exited" from="StaticBody2D" to="." method="_on_static_body_2d_mouse_exited"]
 [connection signal="screen_entered" from="VisibleOnScreenEnabler2D" to="." method="_on_visible_on_screen_enabler_2d_screen_entered"]
 [connection signal="screen_exited" from="VisibleOnScreenEnabler2D" to="." method="_on_visible_on_screen_enabler_2d_screen_exited"]
-[connection signal="signal_discaver_tile" from="Background_tile_logic" to="." method="_on_background_tile_logic_signal_discaver_tile"]
