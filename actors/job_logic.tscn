@@ -19,27 +19,30 @@ func act():
 		job['progress']['step'] += 1
 
 
-func add_job(_job_name='',_pop=0):
+func add_job(_job_name='',_pop=0 , parent = null):
 	var result = job_types.get_job(_job_name)
 	if result['status']:
 		var job = result['job'] 
 		job_quqe.append(job)
 		job['progress'] = {
 			'step' : 0,
-			'pop': _pop
+			'pop': _pop,
+			'uuid': Time.get_unix_time_from_system(),
+			'status':'ongoing',
+			'parent': parent
 		}
 	return false
-
-
-func jobs_status():
-	return []
 
 
 func jobs_result():
 	var temp_jobs = []
 	var done_jobs = []
 	for job in job_quqe:
-		if job['progress']['step'] >= job['time']:
+		if job['progress']['step'] >= job['time'] :
+			done_jobs.append(job)
+		elif job['progress']['status'] == 'cancelled':
+			done_jobs.append(job)
+		elif job['progress']['status'] == 'cancelled_on_success':
 			done_jobs.append(job)
 		else:
 			temp_jobs.append(job)
@@ -54,44 +57,69 @@ func _resolve_job(done_jobs):
 	var result_list = []
 	for job in done_jobs:
 		
+		if job['progress']['status'] == 'cancelled':
+			result_list.append(_return_job_result(job, false))
+			job['progress']['step'] = job['time']
+			continue
+		
+		if job['progress']['status'] == 'cancelled_on_success':
+			result_list.append(_return_job_result(job, false))
+			job['progress']['step'] = job['time']
+			continue
+		
 		var dice_roll = rng.randi_range(0,999)
 		
 		if dice_roll < 1000 * job['chance']:
-			var res = {
-				'success': true,
-				'pop': job['progress']['pop'],
-				'name': job['name']}
-			if 'pop_min' in job['reward']:
-				var p_min = job['reward']['pop_min']
-				var p_max = job['reward']['pop_max']
-				var pop_gain = rng.randi_range(p_min,p_max)
-				res =+ pop_gain
-			result_list.append(res)
-			print('succes')
+			result_list.append(_return_job_result(job, true,done_jobs))
 		else:
-			dice_roll = rng.randi_range(0,999)
-			
-			if dice_roll < 1000 * job['risk_rate']:
-				if 'pop_min' in job['penalty']:
-					var p_min = job['penalty']['pop_min']
-					var p_max = job['penalty']['pop_max']
-					var pop_loss = rng.randi_range(p_min,p_max)
-					job['progress']['pop'] -= pop_loss
-					
-			job['progress']['step'] = 0
-			
+			_fail_result_calc(job)
 			if job['progress']['pop'] > 0 and not job['single_action']:
+				job['progress']['step'] = 0	
 				job_quqe.append(job)
-				print('try agine')
 			else:
-				var res = {
-					'name': job['name'],
-					'success':true,
-					'pop':job['progress']['pop']
-					}
-				result_list.append(res)
-				print('faill')
+				result_list.append(_return_job_result(job, false))
 	return result_list
+	
+	
+func _fail_result_calc(job):
+	var dice_roll = rng.randi_range(0,999)
+			
+	if dice_roll < 1000 * job['risk_rate']:
+		if 'pop_min' in job['penalty']:
+			var p_min = job['penalty']['pop_min']
+			var p_max = job['penalty']['pop_max']
+			var pop_loss = rng.randi_range(p_min,p_max)
+			job['progress']['pop'] -= pop_loss
+			
+	job['progress']['step'] = 0
+	
+
+func _return_job_result(job, is_success, done_jobs=[]):
+	var res = {
+		'success': is_success,
+		'pop': job['progress']['pop'],
+		'name': job['name'],
+		'parent':job['progress']['parent'],
+		'status':job['progress']['status']
+		}
+	if is_success:	
+		
+		if job['allow_finish_on_fellow_succes']:
+			for item in job_quqe: 
+				if item['name'] == job['name']:
+					item['progress']['status'] = 'cancelled_on_success'
+			
+			for item in done_jobs: 
+				if item['name'] == job['name']:
+					item['progress']['status'] = 'cancelled_on_success'
+		
+		if 'pop_min' in job['reward']:
+			var p_min = job['reward']['pop_min']
+			var p_max = job['reward']['pop_max']
+			var pop_gain = rng.randi_range(p_min,p_max)
+			res =+ pop_gain
+		
+	return res
 "
 
 [node name="Job_logic" type="Node"]

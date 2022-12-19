@@ -11,7 +11,6 @@ var rand_string = \"abcdefghijklmnopqrstuvwxyz1234567890\".to_upper()
 var rng = RandomNumberGenerator.new()
 signal signal_discaver_tile()
 
-var current_action = \"idle\"
 
 var tile_top = null
 var tile_top_r = null
@@ -39,10 +38,8 @@ func _generate_word(length):
 	return word
 
 
-func try_discaver_tile(new_pop):
-	job_logic.add_job('sector_discaver', new_pop)
-	pop += new_pop
-	current_action = 'discaver_tile'
+func try_discaver_tile(new_pop, parent):
+	job_logic.add_job('sector_discaver', new_pop, parent)
 	
 
 func set_logi_neighborhood(
@@ -80,6 +77,10 @@ func act():
 func _job_resolve_proces():
 	var job_done_list = job_logic.jobs_result()
 	for job in job_done_list:
+		if job['status'] == 'cancelled':
+			job['parent'].pop += job['pop']
+			continue
+			
 		if job['success'] and job['name'] == 'Sector Discaver':
 			emit_signal('signal_discaver_tile')
 		
@@ -89,7 +90,7 @@ func _job_resolve_proces():
 func explore_neighborhood(neighborhood):
 	if pop>4:
 		pop -= 5
-	neighborhood.try_discaver_tile(5)
+	neighborhood.try_discaver_tile(5, self)
 
 
 func cycle_update_logic():

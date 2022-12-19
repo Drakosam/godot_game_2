@@ -1,4 +1,50 @@
-[gd_scene format=3 uid="uid://cs6kycj0yoqnt"]
+[gd_scene load_steps=2 format=3 uid="uid://cs6kycj0yoqnt"]
+
+[sub_resource type="GDScript" id="GDScript_gh1yl"]
+script/source = "extends Panel
+
+var JobsProgressStaus = preload(\"res://components/job_progress_status.tscn\") 
+var raw_tile_data = null
+
+var job_quaque = []
+
+func _ready():
+	pass 
+	
+
+func set_tile(raw_tile):
+	raw_tile_data = raw_tile
+	job_quaque = []
+	for c in $VBoxContainer.get_children():
+		$VBoxContainer.remove_child(c)
+	update_panel()
+	
+
+func update_panel():
+	if visible:
+		if raw_tile_data:
+			for item in raw_tile_data.logic.job_logic.job_quqe:
+				var is_new = true
+				for job in job_quaque:
+					if job.uuid == item['progress']['uuid']:
+						is_new = false
+						break
+				if is_new:
+					var new_job = JobsProgressStaus.instantiate()
+					new_job.set_job(item)
+					job_quaque.append(new_job)
+					$VBoxContainer.add_child(new_job)
+	
+	var temp_job_quaque = []
+	for job in job_quaque:
+		job.update_panel()
+		if job.is_active:
+			temp_job_quaque.append(job)
+		else:
+			$VBoxContainer.remove_child(job)
+		
+	job_quaque = temp_job_quaque
+"
 
 [node name="Current_action_panel" type="Panel"]
 anchors_preset = 15
@@ -6,8 +52,12 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = SubResource("GDScript_gh1yl")
 
-[node name="Label" type="Label" parent="."]
-offset_right = 40.0
-offset_bottom = 23.0
-text = "curent actions"
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
