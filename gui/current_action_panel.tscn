@@ -15,8 +15,8 @@ func _ready():
 func set_tile(raw_tile):
 	raw_tile_data = raw_tile
 	job_quaque = []
-	for c in $VBoxContainer.get_children():
-		$VBoxContainer.remove_child(c)
+	for c in $ScrollContainer/VBoxContainer.get_children():
+		$ScrollContainer/VBoxContainer.remove_child(c)
 	update_panel()
 	
 
@@ -33,7 +33,7 @@ func update_panel():
 					var new_job = JobsProgressStaus.instantiate()
 					new_job.set_job(item)
 					job_quaque.append(new_job)
-					$VBoxContainer.add_child(new_job)
+					$ScrollContainer/VBoxContainer.add_child(new_job)
 	
 	var temp_job_quaque = []
 	for job in job_quaque:
@@ -41,7 +41,7 @@ func update_panel():
 		if job.is_active:
 			temp_job_quaque.append(job)
 		else:
-			$VBoxContainer.remove_child(job)
+			$ScrollContainer/VBoxContainer.remove_child(job)
 		
 	job_quaque = temp_job_quaque
 "
@@ -54,10 +54,15 @@ grow_horizontal = 2
 grow_vertical = 2
 script = SubResource("GDScript_gh1yl")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3

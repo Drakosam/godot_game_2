@@ -19,11 +19,18 @@ var tile_botton = null
 var tile_botton_r = null
 var tile_botton_l = null
 
+
 var pop = 0
 var max_pop = 50
 var pop_lock = 0
 
+
 var job_logic = null
+
+
+var exp_cd = 0
+var pop_cd = 0
+
 
 func _ready():
 	name_tile = _generate_word(9)
@@ -73,6 +80,10 @@ func act():
 	if get_parent().visible :
 		job_logic.act()
 		_job_resolve_proces()
+	
+	if exp_cd>0:
+		exp_cd -= 1
+
 
 func _job_resolve_proces():
 	var job_done_list = job_logic.jobs_result()
@@ -88,9 +99,10 @@ func _job_resolve_proces():
 
 
 func explore_neighborhood(neighborhood):
-	if pop>4:
+	if pop>4 and exp_cd<1:
 		pop -= 5
-	neighborhood.try_discaver_tile(5, self)
+		neighborhood.try_discaver_tile(5, self)
+		exp_cd = 20
 
 
 func cycle_update_logic():
@@ -105,7 +117,9 @@ func _population_attrition():
 	var pop_lost_chance = rng.randi_range(0,999)
 	
 	pop_lost_chance += max_pop - pop  
-		
+	
+	print(pop_lost_chance)
+	
 	if pop_lost_chance > 960:
 		pop -= 1
 "

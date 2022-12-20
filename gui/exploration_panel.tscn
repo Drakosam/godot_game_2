@@ -18,14 +18,34 @@ func set_tile(new_tile):
 func update_panel():
 	hide_btt()
 	refresh_exp_btt()
+	check_valability()
+
+
+func check_valability():
+	if current_tile.logic.exp_cd > 0:
+		$ScrollContainer/VBoxContainer/ChekNextSector/btt_top.disabled = true
+		$ScrollContainer/VBoxContainer/ChekNextSector/btt_buttom.disabled = true
+		$ScrollContainer/VBoxContainer/ChekNextSector/btt_left_buttom.disabled = true
+		$ScrollContainer/VBoxContainer/ChekNextSector/btt_left_top.disabled = true
+		$ScrollContainer/VBoxContainer/ChekNextSector/btt_right_buttom.disabled = true
+		$ScrollContainer/VBoxContainer/ChekNextSector/btt_right_top.disabled = true
+	else:
+		$ScrollContainer/VBoxContainer/ChekNextSector/btt_top.disabled = false
+		$ScrollContainer/VBoxContainer/ChekNextSector/btt_buttom.disabled = false
+		$ScrollContainer/VBoxContainer/ChekNextSector/btt_left_buttom.disabled = false
+		$ScrollContainer/VBoxContainer/ChekNextSector/btt_left_top.disabled = false
+		$ScrollContainer/VBoxContainer/ChekNextSector/btt_right_buttom.disabled = false
+		$ScrollContainer/VBoxContainer/ChekNextSector/btt_right_top.disabled = false
+
 
 func hide_btt():
-	$VBoxContainer/btt_top.visible = false
-	$VBoxContainer/btt_buttom.visible = false
-	$VBoxContainer/btt_left_buttom.visible = false
-	$VBoxContainer/btt_left_top.visible = false
-	$VBoxContainer/btt_right_buttom.visible = false
-	$VBoxContainer/btt_right_top.visible = false
+	$ScrollContainer/VBoxContainer/ChekNextSector/btt_top.visible = false
+	$ScrollContainer/VBoxContainer/ChekNextSector/btt_buttom.visible = false
+	$ScrollContainer/VBoxContainer/ChekNextSector/btt_left_buttom.visible = false
+	$ScrollContainer/VBoxContainer/ChekNextSector/btt_left_top.visible = false
+	$ScrollContainer/VBoxContainer/ChekNextSector/btt_right_buttom.visible = false
+	$ScrollContainer/VBoxContainer/ChekNextSector/btt_right_top.visible = false
+
 
 func refresh_exp_btt():
 	if not current_tile:
@@ -36,58 +56,63 @@ func refresh_exp_btt():
 		
 	if current_tile.tile_top and current_tile.tile_top.visible:
 		if not current_tile.tile_top.is_discover:
-			$VBoxContainer/btt_top.visible = true
-			$VBoxContainer/btt_top.text =  'Sector top ::' + current_tile.tile_top.logic.name_tile
+			$ScrollContainer/VBoxContainer/ChekNextSector/btt_top.visible = true
+			$ScrollContainer/VBoxContainer/ChekNextSector/btt_top.text =  'Sector top ::' + current_tile.tile_top.logic.name_tile
 			
 	if current_tile.tile_top_r and current_tile.tile_top_r.visible:
 		if not current_tile.tile_top_r.is_discover:
-			$VBoxContainer/btt_right_top.visible = true
-			$VBoxContainer/btt_right_top.text = 'Sector right top ::' + current_tile.tile_top_r.logic.name_tile
+			$ScrollContainer/VBoxContainer/ChekNextSector/btt_right_top.visible = true
+			$ScrollContainer/VBoxContainer/ChekNextSector/btt_right_top.text = 'Sector right top ::' + current_tile.tile_top_r.logic.name_tile
 			
 	if current_tile.tile_top_l and current_tile.tile_top_l.visible:
 		if not current_tile.tile_top_l.is_discover:
-			$VBoxContainer/btt_left_top.visible = true
-			$VBoxContainer/btt_left_top.text = 'Sector left top ::' + current_tile.tile_top_l.logic.name_tile
+			$ScrollContainer/VBoxContainer/ChekNextSector/btt_left_top.visible = true
+			$ScrollContainer/VBoxContainer/ChekNextSector/btt_left_top.text = 'Sector left top ::' + current_tile.tile_top_l.logic.name_tile
 			
 	if current_tile.tile_botton and current_tile.tile_botton.visible:
 		if not current_tile.tile_botton.is_discover:
-			$VBoxContainer/btt_buttom.visible = true
-			$VBoxContainer/btt_buttom.text = 'Sector Buttom ::' + current_tile.tile_botton.logic.name_tile
+			$ScrollContainer/VBoxContainer/ChekNextSector/btt_buttom.visible = true
+			$ScrollContainer/VBoxContainer/ChekNextSector/btt_buttom.text = 'Sector Buttom ::' + current_tile.tile_botton.logic.name_tile
 			
 	if current_tile.tile_botton_r and current_tile.tile_botton_r.visible:
 		if not current_tile.tile_botton_r.is_discover:
-			$VBoxContainer/btt_right_buttom.visible = true
-			$VBoxContainer/btt_right_buttom.text = 'Sector right buttom ::' + current_tile.tile_botton_r.logic.name_tile
+			$ScrollContainer/VBoxContainer/ChekNextSector/btt_right_buttom.visible = true
+			$ScrollContainer/VBoxContainer/ChekNextSector/btt_right_buttom.text = 'Sector right buttom ::' + current_tile.tile_botton_r.logic.name_tile
 			
 	if current_tile.tile_botton_l and current_tile.tile_botton_l.visible:
 		if not current_tile.tile_botton_l.is_discover:
-			$VBoxContainer/btt_left_buttom.visible = true
-			$VBoxContainer/btt_left_buttom.text = 'Sector left buttom ::' + current_tile.tile_botton_l.logic.name_tile
-
+			$ScrollContainer/VBoxContainer/ChekNextSector/btt_left_buttom.visible = true
+			$ScrollContainer/VBoxContainer/ChekNextSector/btt_left_buttom.text = 'Sector left buttom ::' + current_tile.tile_botton_l.logic.name_tile
 
 
 func _on_btt_top_button_down():
 	current_tile.logic.explore_neighborhood(current_tile.tile_top.logic)
+	check_valability()
 
 
 func _on_btt_right_top_button_down():
 	current_tile.logic.explore_neighborhood(current_tile.tile_top_r.logic)
+	check_valability()
 
 
 func _on_btt_left_top_button_down():
 	current_tile.logic.explore_neighborhood(current_tile.tile_top_l.logic)
+	check_valability()
 
 
 func _on_btt_right_buttom_button_down():
 	current_tile.logic.explore_neighborhood(current_tile.tile_botton_r.logic)
+	check_valability()
 
 
 func _on_btt_left_buttom_button_down():
 	current_tile.logic.explore_neighborhood(current_tile.tile_botton_l.logic)
+	check_valability()
 
 
 func _on_btt_buttom_button_down():
 	current_tile.logic.explore_neighborhood(current_tile.tile_botton.logic)
+	check_valability()
 
 "
 
@@ -99,52 +124,65 @@ grow_horizontal = 2
 grow_vertical = 2
 script = SubResource("GDScript_uytab")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="ScrollContainer" type="ScrollContainer" parent="."]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="btt_top" type="Button" parent="VBoxContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
+offset_right = 1152.0
+offset_bottom = 648.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ChekNextSector" type="VBoxContainer" parent="ScrollContainer/VBoxContainer"]
+offset_right = 1152.0
+offset_bottom = 648.0
+size_flags_vertical = 3
+
+[node name="btt_top" type="Button" parent="ScrollContainer/VBoxContainer/ChekNextSector"]
 offset_right = 1152.0
 offset_bottom = 31.0
 text = "Sector top ::"
 
-[node name="btt_right_top" type="Button" parent="VBoxContainer"]
+[node name="btt_right_top" type="Button" parent="ScrollContainer/VBoxContainer/ChekNextSector"]
 offset_top = 35.0
 offset_right = 1152.0
 offset_bottom = 66.0
 text = "Sector right top ::"
 
-[node name="btt_left_top" type="Button" parent="VBoxContainer"]
+[node name="btt_left_top" type="Button" parent="ScrollContainer/VBoxContainer/ChekNextSector"]
 offset_top = 70.0
 offset_right = 1152.0
 offset_bottom = 101.0
 text = "Sector left top ::
 "
 
-[node name="btt_right_buttom" type="Button" parent="VBoxContainer"]
+[node name="btt_right_buttom" type="Button" parent="ScrollContainer/VBoxContainer/ChekNextSector"]
 offset_top = 105.0
 offset_right = 1152.0
 offset_bottom = 136.0
 text = "Sector right buttom ::"
 
-[node name="btt_left_buttom" type="Button" parent="VBoxContainer"]
+[node name="btt_left_buttom" type="Button" parent="ScrollContainer/VBoxContainer/ChekNextSector"]
 offset_top = 140.0
 offset_right = 1152.0
 offset_bottom = 171.0
 text = "Sector left buttom ::"
 
-[node name="btt_buttom" type="Button" parent="VBoxContainer"]
+[node name="btt_buttom" type="Button" parent="ScrollContainer/VBoxContainer/ChekNextSector"]
 offset_top = 175.0
 offset_right = 1152.0
 offset_bottom = 206.0
 text = "Sector Buttom ::"
 
-[connection signal="button_down" from="VBoxContainer/btt_top" to="." method="_on_btt_top_button_down"]
-[connection signal="button_down" from="VBoxContainer/btt_right_top" to="." method="_on_btt_right_top_button_down"]
-[connection signal="button_down" from="VBoxContainer/btt_left_top" to="." method="_on_btt_left_top_button_down"]
-[connection signal="button_down" from="VBoxContainer/btt_right_buttom" to="." method="_on_btt_right_buttom_button_down"]
-[connection signal="button_down" from="VBoxContainer/btt_left_buttom" to="." method="_on_btt_left_buttom_button_down"]
-[connection signal="button_down" from="VBoxContainer/btt_buttom" to="." method="_on_btt_buttom_button_down"]
+[connection signal="button_down" from="ScrollContainer/VBoxContainer/ChekNextSector/btt_top" to="." method="_on_btt_top_button_down"]
+[connection signal="button_down" from="ScrollContainer/VBoxContainer/ChekNextSector/btt_right_top" to="." method="_on_btt_right_top_button_down"]
+[connection signal="button_down" from="ScrollContainer/VBoxContainer/ChekNextSector/btt_left_top" to="." method="_on_btt_left_top_button_down"]
+[connection signal="button_down" from="ScrollContainer/VBoxContainer/ChekNextSector/btt_right_buttom" to="." method="_on_btt_right_buttom_button_down"]
+[connection signal="button_down" from="ScrollContainer/VBoxContainer/ChekNextSector/btt_left_buttom" to="." method="_on_btt_left_buttom_button_down"]
+[connection signal="button_down" from="ScrollContainer/VBoxContainer/ChekNextSector/btt_buttom" to="." method="_on_btt_buttom_button_down"]
